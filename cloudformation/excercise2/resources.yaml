@@ -1,0 +1,13 @@
+Resources:
+  kubernetes-vpc2:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.91.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      InstanceTenancy: default
+      Tags: 
+        - Key: name
+          Value: kubernetes-vpc2
+
+  

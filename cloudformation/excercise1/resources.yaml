@@ -1,0 +1,110 @@
+# VPC
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html
+Resources:
+  NatGatewayVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.89.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      InstanceTenancy: default
+      Ipv4IpamPoolId: String
+      Tags: 
+        - Key: name
+          Value: nat-gateway-vpc
+
+# Subnets
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html
+  PublicSubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: String
+      AvailabilityZoneId: String
+      CidrBlock: String
+      EnableDns64: Boolean
+      EnableLniAtDeviceIndex: Integer
+      Ipv4IpamPoolId: String
+      Ipv4NetmaskLength: Integer
+      MapPublicIpOnLaunch: Boolean
+      OutpostArn: String
+      PrivateDnsNameOptionsOnLaunch: 
+        PrivateDnsNameOptionsOnLaunch
+      Tags: 
+        - Tag
+      VpcId: !Ref NatGatewayVPC
+
+  myInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: stack
+        Value: production
+
+  VpcAttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref myInternetGateway
+      VpcId: !Ref NatGatewayVPC
+
+
+
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-natgateway.html
+# Need to make sure the NAT Gateway and its subobjects are configured correctly
+  NATGateway:
+   Type: AWS::EC2::NatGateway
+   Properties:
+      AllocationId: !GetAtt NATGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+      - Key: stack
+        Value: production
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+        Domain: vpc
+  RouteNATGateway:
+    Type: AWS::EC2::Route
+    Properties:
+        RouteTableId: !Ref PrivateRouteTable
+        DestinationCidrBlock: '0.0.0.0/0'
+        NatGatewayId: !Ref NATGateway
+
+  
+  
+  # RouteTable should be created automatically
+  # Need to add Routes to existing RouteTables
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route.html
+
+
+
+
+
+  SSHSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html
+  PublicServer01:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      AvailabilityZone: String # need to fill this up
+      InstanceType: t3.micro
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+        # - MyExistingSecurityGroup
+      # KeyPair name - the keypair must be created with API call prior to running the template because we need to save the result file for ssh option to ec2 instances.
+      # KeyName: mykey
+      ImageId: ami-7a11e213 # Need to make sure to update . How to set that this must be updated as a parameter in the template of cloudformation ? 
+      SubnetId: String
+      Tags: 
+        - Tag
+      UserData: String
+      Volumes: 
+        - Volume
