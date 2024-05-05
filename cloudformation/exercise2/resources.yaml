@@ -1,0 +1,28 @@
+
+# Cannot manage names of the aws resources , you can only use the logical ID which is the name of the resource in CloudFormation however we cannot assign a unique name of the resource which will be visible in the console.
+# We can use the Tags which exist in most of the resources in AWS to know to which CloudFormation stack the resource relates to.
+
+Resources:
+  kubernetesVpc2:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.103.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      InstanceTenancy: default
+      Tags: 
+        - Key: name
+          Value: kubernetes-and-vpc-peering
+
+  kubernetesVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.102.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      InstanceTenancy: default
+      Tags: 
+        - Key: name
+          Value: kubernetes-and-vpc-peering
+
+  

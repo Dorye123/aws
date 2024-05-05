@@ -1,3 +1,0 @@
-# Task 
-(VPC peering and Kubernetes Installation with kubeadm and containers creation and publishing apps and accessing them from the other Windows server. )
-2. Install 2 linux servers in a private subnet in a different VPC , create a Kubernetes cluster with them . One worker the other is a master. Then write a basic web app which will get the index.html from S3 bucket and will present the html to the windows server from the previous excersice. The containers will be stored in dockerhub to save cost.
